@@ -1,18 +1,47 @@
+import { useState } from "react";
 import Box from "@mui/material/Box";
 import TextBoxes from "components/TextBoxes";
 import Text from "components/Text";
 
 export default function LongPosition() {
+  const [target, setTarget] = useState<number>();
+  const [rewardPercent, setRewardPercent] = useState<number>();
+  const [rewardAmount, setRewardAmount] = useState<number>();
+  const [tpLimit, setTpLimit] = useState<number>();
+  const [tpSellAmount, setTpSellAmount] = useState<number>();
+  const [riskRewardRatio, setRiskRewardRatio] = useState<number>();
+  const [entryPrice, setEntryPrice] = useState<number>();
+  const [buyAmount, setBuyAmount] = useState<number>();
+  const [slTrigger, setSlTrigger] = useState<number>();
+  const [slSellAmount, setSlSellAmount] = useState<number>();
+  const [stop, setStop] = useState<number>();
+  const [riskPercent, setRiskPercent] = useState<number>();
+  const [riskAmount, setRiskAmount] = useState<number>();
+
   return (
     <>
       <TextBoxes>
-        <Text id="target" label="Target" xs />
-        <Text id="rewardPercent" label="Reward %" xs />
-        <Text id="rewardAmount" label="Reward Amount" xs />
+        <Text label="Target" xs value={target} onChange={setTarget} />
+        <Text
+          label="Reward %"
+          xs
+          value={rewardPercent}
+          onChange={setRewardPercent}
+        />
+        <Text
+          label="Reward Amount"
+          xs
+          value={rewardAmount}
+          onChange={setRewardAmount}
+        />
       </TextBoxes>
       <TextBoxes>
-        <Text id="tpLimit" label="TP Limit" />
-        <Text id="tpSellAmount" label="Sell Amount" />
+        <Text label="TP Limit" value={tpLimit} onChange={setTpLimit} />
+        <Text
+          label="Sell Amount"
+          value={tpSellAmount}
+          onChange={setTpSellAmount}
+        />
       </TextBoxes>
       <Box
         sx={{
@@ -24,11 +53,15 @@ export default function LongPosition() {
           bgcolor: "#003705",
         }}
       >
-        <Text id="riskRewardRatio" label="Risk/Reward Ratio" />
+        <Text
+          label="Risk/Reward Ratio"
+          value={riskRewardRatio}
+          onChange={setRiskRewardRatio}
+        />
       </Box>
       <TextBoxes>
-        <Text id="entryPrice" label="Entry Price" />
-        <Text id="buyAmount" label="Buy Amount" />
+        <Text label="Entry Price" value={entryPrice} onChange={setEntryPrice} />
+        <Text label="Buy Amount" value={buyAmount} onChange={setBuyAmount} />
       </TextBoxes>
       <Box
         sx={{
@@ -38,13 +71,22 @@ export default function LongPosition() {
         }}
       />
       <TextBoxes>
-        <Text id="slTrigger" label="SL Trigger" />
-        <Text id="slSellAmount" label="Sell Amount" />
+        <Text label="SL Trigger" value={slTrigger} onChange={setSlTrigger} />
+        <Text
+          label="Sell Amount"
+          value={slSellAmount}
+          onChange={setSlSellAmount}
+        />
       </TextBoxes>
       <TextBoxes>
-        <Text id="stop" label="Stop" xs />
-        <Text id="riskPercent" label="Risk %" xs />
-        <Text id="riskAmount" label="Risk Amount" xs />
+        <Text label="Stop" xs value={stop} onChange={setStop} />
+        <Text label="Risk %" xs value={riskPercent} onChange={setRiskPercent} />
+        <Text
+          label="Risk Amount"
+          xs
+          value={riskAmount}
+          onChange={setRiskAmount}
+        />
       </TextBoxes>
     </>
   );
