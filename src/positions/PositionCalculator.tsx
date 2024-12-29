@@ -4,13 +4,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextBoxes from "components/TextBoxes";
 import Text from "components/Text";
-import {
-  compute,
-  noError,
-  preCompute,
-  preComputeRatios,
-  type Error,
-} from "utils/compute";
+import { compute, noError, preCompute, type Error } from "utils/compute";
 
 import Decimal from "decimal.js";
 
@@ -37,8 +31,8 @@ export default function PositionCalculator({ type }: { type: Position }) {
   const [error, setError] = useState<Error>(noError);
 
   const handleCompute = () => {
-    const initial = preComputeRatios(
-      preCompute({
+    const initial = preCompute(
+      {
         target,
         rewardPercent,
         rewardAmount,
@@ -53,7 +47,8 @@ export default function PositionCalculator({ type }: { type: Position }) {
         stop,
         riskPercent,
         riskAmount,
-      })
+      },
+      isShort
     );
 
     const [computed, error] = compute(initial);

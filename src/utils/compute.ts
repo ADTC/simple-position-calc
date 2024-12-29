@@ -19,7 +19,12 @@ Reward % = Reward Amount / Buy Amount
 Sell Amount(USD) = Buy Amount (USD) + Reward Amount (USD)
 
 Long Risk/Reward Ratio = Reward % / Risk %
+Reward % = Long Risk/Reward Ratio * Risk %
+Risk % = Reward % / Long Risk/Reward Ratio
+
 Short Risk/Reward Ratio =  Risk % / Reward %
+Risk % = Short Risk/Reward Ratio * Reward %
+Reward % = Risk % / Short Risk/Reward Ratio
 
 Stop = Entry Price - SL Trigger
 SL Trigger = Entry Price - Stop
@@ -34,7 +39,7 @@ Sell Amount (USD) = Buy Amount (USD) - Risk Amount (USD)
 */
 
 // Pre-compute simple addition and subtraction
-export const preCompute = (initial: Values): Values => {
+export const preCompute = (initial: Values, isShort: boolean): Values => {
   const {
     target,
     // rewardPercent,
@@ -136,11 +141,12 @@ export const preCompute = (initial: Values): Values => {
       ? buyAmount.minus(riskAmount)
       : initial.slSellAmount;
 
-  return initial;
+  return preComputeRatios(initial, isShort);
 };
 
 // Also-compute ratios after the simple pre-compute
-export const preComputeRatios = (initial: Values): Values => {
+// Note: Separate function is used to get updated values from last pre-compute.
+const preComputeRatios = (initial: Values, isShort: boolean): Values => {
   const {
     target,
     rewardPercent,
@@ -201,6 +207,39 @@ export const preComputeRatios = (initial: Values): Values => {
         initial.rewardPercent !== undefined
       ? initial.riskPercent.div(initial.rewardPercent)
       : initial.shortRiskRewardRatio;
+
+  // Back-compute Risk % and Reward % if Ratio is given
+
+  if (isShort) {
+    initial.rewardPercent =
+      initial.rewardPercent === undefined &&
+      initial.shortRiskRewardRatio !== undefined &&
+      initial.riskPercent !== undefined
+        ? initial.riskPercent.div(initial.shortRiskRewardRatio)
+        : initial.rewardPercent;
+
+    initial.riskPercent =
+      initial.riskPercent === undefined &&
+      initial.shortRiskRewardRatio !== undefined &&
+      initial.rewardPercent !== undefined
+        ? initial.shortRiskRewardRatio.mul(initial.rewardPercent)
+        : initial.riskPercent;
+    //
+  } else {
+    initial.rewardPercent =
+      initial.rewardPercent === undefined &&
+      initial.longRiskRewardRatio !== undefined &&
+      initial.riskPercent !== undefined
+        ? initial.longRiskRewardRatio.mul(initial.riskPercent)
+        : initial.rewardPercent;
+
+    initial.riskPercent =
+      initial.riskPercent === undefined &&
+      initial.longRiskRewardRatio !== undefined &&
+      initial.rewardPercent !== undefined
+        ? initial.rewardPercent.div(initial.longRiskRewardRatio)
+        : initial.riskPercent;
+  }
 
   return initial;
 };
