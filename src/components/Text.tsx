@@ -3,6 +3,10 @@ import TextField from "@mui/material/TextField";
 import Decimal from "decimal.js";
 import IconSpan from "./IconSpan";
 
+// Only allow optional hyphen at beginning, optional digits
+// and one optional decimal point anywhere in the string
+const regex = /^-?\d*\.?\d*$/;
+
 export default function Text({
   hidden,
   label,
@@ -27,9 +31,7 @@ export default function Text({
   }, [value]);
 
   useEffect(() => {
-    // Only allow optional hyphen at beginning, optional digits
-    // and one optional decimal point anywhere in the string
-    if (/^-?\d*\.?\d*$/.test(stringValue)) {
+    if (regex.test(stringValue)) {
       // Allow trailing decimal point when typing
       if (stringValue.endsWith(".")) return;
       try {
@@ -45,23 +47,30 @@ export default function Text({
       {label}{" "}
       <IconSpan
         icon="📋"
+        title="Paste Number from Clipboard"
         hover={hover}
         onClick={
           () =>
             navigator.clipboard
               .readText()
-              .then((text) => setStringValue(text))
+              .then((text) => regex.test(text) && setStringValue(text))
               .catch(() => {}) // Ignore error
         }
       />{" "}
       <IconSpan
         icon="📑"
+        title="Copy This Number to Clipboard"
         hover={hover}
         onClick={
           () => navigator.clipboard.writeText(stringValue).catch(() => {}) // Ignore error
         }
       />{" "}
-      <IconSpan icon="❌" hover={hover} onClick={() => setStringValue("")} />
+      <IconSpan
+        icon="❌"
+        title="Clear This Field"
+        hover={hover}
+        onClick={() => setStringValue("")}
+      />
     </>
   );
 
