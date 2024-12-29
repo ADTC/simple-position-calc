@@ -6,11 +6,13 @@ export default function Text({
   xs,
   value,
   onChange,
+  error,
 }: {
   label: string;
   xs?: boolean;
   value: number | undefined;
   onChange: (value: number | undefined) => void;
+  error: boolean;
 }) {
   const [stringValue, setStringValue] = useState<string>("");
 
@@ -33,6 +35,7 @@ export default function Text({
 
   return (
     <TextField
+      error={error}
       helperText={label}
       sx={xs ? { maxWidth: 130 } : undefined}
       variant="outlined"
