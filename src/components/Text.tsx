@@ -4,12 +4,14 @@ import Decimal from "decimal.js";
 import IconSpan from "./IconSpan";
 
 export default function Text({
+  hidden,
   label,
   xs,
   value,
   onChange,
   error,
 }: {
+  hidden?: boolean;
   label: string;
   xs?: boolean;
   value: Decimal | undefined;
@@ -69,7 +71,7 @@ export default function Text({
       onPointerLeave={() => setHover(false)}
       error={error}
       helperText={helperText}
-      sx={xs ? { maxWidth: 140 } : undefined}
+      sx={hidden ? { display: "none" } : xs ? { maxWidth: 130 } : undefined}
       variant="outlined"
       value={stringValue}
       onChange={(e) => setStringValue(e.target.value)}

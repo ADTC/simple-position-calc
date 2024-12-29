@@ -14,7 +14,11 @@ import {
 
 import Decimal from "decimal.js";
 
-export default function PositionCalculator() {
+export type Position = "long" | "short";
+
+export default function PositionCalculator({ type }: { type: Position }) {
+  const isShort = type === "short";
+
   const [target, setTarget] = useState<Decimal>();
   const [rewardPercent, setRewardPercent] = useState<Decimal>();
   const [rewardAmount, setRewardAmount] = useState<Decimal>();
@@ -90,25 +94,49 @@ export default function PositionCalculator() {
 
   const isError = Object.values(error).some((value) => value);
 
+  const green = "#003705";
+  const red = "#5a2d2d";
+  const config = {
+    // Mathematically, the values are exactly the same^ for both long and short positions.
+    // It's only the labels that interchange in the UI. ^ (except for Risk/Reward Ratio).
+    target: isShort ? "Stop" : "Target",
+    rewardPercent: isShort ? "Risk %" : "Reward %",
+    rewardAmount: isShort ? "Risk Amt" : "Reward Amt",
+    tpLimit: isShort ? "SL Trigger" : "TP Limit",
+    tpSellAmount: isShort ? "Buy Amount" : "Sell Amount",
+    riskRewardRatio: "Risk/Reward Ratio",
+    entryPrice: "Entry Price",
+    buyAmount: isShort ? "Sell Amount" : "Buy Amount",
+    slTrigger: isShort ? "TP Limit" : "SL Trigger",
+    slSellAmount: isShort ? "Buy Amount" : "Sell Amount",
+    stop: isShort ? "Target" : "Stop",
+    riskPercent: isShort ? "Reward %" : "Risk %",
+    riskAmount: isShort ? "Reward Amt" : "Risk Amt",
+    aboveHeight: isShort ? 50 : 150,
+    aboveColor: isShort ? red : green,
+    belowHeight: isShort ? 150 : 50,
+    belowColor: isShort ? green : red,
+  };
+
   return (
     <>
       <TextBoxes>
         <Text
-          label="Target"
+          label={config.target}
           xs
           value={target}
           onChange={setTarget}
           error={error.target}
         />
         <Text
-          label="Reward %"
+          label={config.rewardPercent}
           xs
           value={rewardPercent}
           onChange={setRewardPercent}
           error={error.rewardPercent}
         />
         <Text
-          label="Reward Amt" // "Reward Amount"
+          label={config.rewardAmount}
           xs
           value={rewardAmount}
           onChange={setRewardAmount}
@@ -117,13 +145,13 @@ export default function PositionCalculator() {
       </TextBoxes>
       <TextBoxes>
         <Text
-          label="TP Limit"
+          label={config.tpLimit}
           value={tpLimit}
           onChange={setTpLimit}
           error={error.tpLimit}
         />
         <Text
-          label="Sell Amount"
+          label={config.tpSellAmount}
           value={tpSellAmount}
           onChange={setTpSellAmount}
           error={error.tpSellAmount}
@@ -135,12 +163,13 @@ export default function PositionCalculator() {
           alignItems: "center",
           justifyContent: "center",
           width: 300,
-          height: 300,
-          bgcolor: "#003705",
+          height: config.aboveHeight,
+          bgcolor: config.aboveColor,
         }}
       >
         <Text
-          label="Risk/Reward Ratio"
+          hidden={isShort}
+          label={config.riskRewardRatio}
           value={riskRewardRatio}
           onChange={setRiskRewardRatio}
           error={error.riskRewardRatio}
@@ -148,13 +177,13 @@ export default function PositionCalculator() {
       </Box>
       <TextBoxes>
         <Text
-          label="Entry Price"
+          label={config.entryPrice}
           value={entryPrice}
           onChange={setEntryPrice}
           error={error.entryPrice}
         />
         <Text
-          label="Buy Amount"
+          label={config.buyAmount}
           value={buyAmount}
           onChange={setBuyAmount}
           error={error.buyAmount}
@@ -162,20 +191,31 @@ export default function PositionCalculator() {
       </TextBoxes>
       <Box
         sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
           width: 300,
-          height: 100,
-          bgcolor: "#5a2d2d",
+          height: config.belowHeight,
+          bgcolor: config.belowColor,
         }}
-      />
+      >
+        <Text
+          hidden={!isShort}
+          label={config.riskRewardRatio}
+          value={riskRewardRatio}
+          onChange={setRiskRewardRatio}
+          error={error.riskRewardRatio}
+        />
+      </Box>
       <TextBoxes>
         <Text
-          label="SL Trigger"
+          label={config.slTrigger}
           value={slTrigger}
           onChange={setSlTrigger}
           error={error.slTrigger}
         />
         <Text
-          label="Sell Amount"
+          label={config.slSellAmount}
           value={slSellAmount}
           onChange={setSlSellAmount}
           error={error.slSellAmount}
@@ -183,21 +223,21 @@ export default function PositionCalculator() {
       </TextBoxes>
       <TextBoxes>
         <Text
-          label="Stop"
+          label={config.stop}
           xs
           value={stop}
           onChange={setStop}
           error={error.stop}
         />
         <Text
-          label="Risk %"
+          label={config.riskPercent}
           xs
           value={riskPercent}
           onChange={setRiskPercent}
           error={error.riskPercent}
         />
         <Text
-          label="Risk Amount"
+          label={config.riskAmount}
           xs
           value={riskAmount}
           onChange={setRiskAmount}
