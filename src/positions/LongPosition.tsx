@@ -12,20 +12,22 @@ import {
   type Error,
 } from "utils/compute";
 
+import Decimal from "decimal.js";
+
 export default function LongPosition() {
-  const [target, setTarget] = useState<number>();
-  const [rewardPercent, setRewardPercent] = useState<number>();
-  const [rewardAmount, setRewardAmount] = useState<number>();
-  const [tpLimit, setTpLimit] = useState<number>();
-  const [tpSellAmount, setTpSellAmount] = useState<number>();
-  const [riskRewardRatio, setRiskRewardRatio] = useState<number>();
-  const [entryPrice, setEntryPrice] = useState<number>();
-  const [buyAmount, setBuyAmount] = useState<number>();
-  const [slTrigger, setSlTrigger] = useState<number>();
-  const [slSellAmount, setSlSellAmount] = useState<number>();
-  const [stop, setStop] = useState<number>();
-  const [riskPercent, setRiskPercent] = useState<number>();
-  const [riskAmount, setRiskAmount] = useState<number>();
+  const [target, setTarget] = useState<Decimal>();
+  const [rewardPercent, setRewardPercent] = useState<Decimal>();
+  const [rewardAmount, setRewardAmount] = useState<Decimal>();
+  const [tpLimit, setTpLimit] = useState<Decimal>();
+  const [tpSellAmount, setTpSellAmount] = useState<Decimal>();
+  const [riskRewardRatio, setRiskRewardRatio] = useState<Decimal>();
+  const [entryPrice, setEntryPrice] = useState<Decimal>();
+  const [buyAmount, setBuyAmount] = useState<Decimal>();
+  const [slTrigger, setSlTrigger] = useState<Decimal>();
+  const [slSellAmount, setSlSellAmount] = useState<Decimal>();
+  const [stop, setStop] = useState<Decimal>();
+  const [riskPercent, setRiskPercent] = useState<Decimal>();
+  const [riskAmount, setRiskAmount] = useState<Decimal>();
 
   const [error, setError] = useState<Error>(noError);
 

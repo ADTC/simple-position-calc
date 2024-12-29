@@ -1,3 +1,9 @@
+import Decimal from "decimal.js";
+
+// With 100 significant digits, chop the last 50 digits when comparing two Decimals.
+// This is to have a tolerance for values that are very close but not exactly equal.
+Decimal.set({ precision: 100 });
+
 /*
 Formulae:
 
@@ -48,84 +54,84 @@ export const preCompute = (initial: Values): Values => {
     initial.target === undefined &&
     tpLimit !== undefined &&
     entryPrice !== undefined
-      ? tpLimit - entryPrice
+      ? tpLimit.minus(entryPrice)
       : initial.target;
 
   initial.tpLimit =
     initial.tpLimit === undefined &&
     target !== undefined &&
     entryPrice !== undefined
-      ? target + entryPrice
+      ? target.plus(entryPrice)
       : initial.tpLimit;
 
   initial.entryPrice =
     initial.entryPrice === undefined &&
     tpLimit !== undefined &&
     target !== undefined
-      ? tpLimit - target
+      ? tpLimit.minus(target)
       : initial.entryPrice;
 
   initial.buyAmount =
     initial.buyAmount === undefined &&
     rewardAmount !== undefined &&
     tpSellAmount !== undefined
-      ? tpSellAmount - rewardAmount
+      ? tpSellAmount.minus(rewardAmount)
       : initial.buyAmount;
 
   initial.rewardAmount =
     initial.rewardAmount === undefined &&
     buyAmount !== undefined &&
     tpSellAmount !== undefined
-      ? tpSellAmount - buyAmount
+      ? tpSellAmount.minus(buyAmount)
       : initial.rewardAmount;
 
   initial.tpSellAmount =
     initial.tpSellAmount === undefined &&
     buyAmount !== undefined &&
     rewardAmount !== undefined
-      ? buyAmount + rewardAmount
+      ? buyAmount.plus(rewardAmount)
       : initial.tpSellAmount;
 
   initial.slTrigger =
     initial.slTrigger === undefined &&
     entryPrice !== undefined &&
     stop !== undefined
-      ? entryPrice - stop
+      ? entryPrice.minus(stop)
       : initial.slTrigger;
 
   initial.stop =
     initial.stop === undefined &&
     entryPrice !== undefined &&
     slTrigger !== undefined
-      ? entryPrice - slTrigger
+      ? entryPrice.minus(slTrigger)
       : initial.stop;
 
   initial.entryPrice =
     initial.entryPrice === undefined &&
     slTrigger !== undefined &&
     stop !== undefined
-      ? stop + slTrigger
+      ? stop.plus(slTrigger)
       : initial.entryPrice;
 
   initial.buyAmount =
     initial.buyAmount === undefined &&
     riskAmount !== undefined &&
     slSellAmount !== undefined
-      ? slSellAmount + riskAmount
+      ? slSellAmount.plus(riskAmount)
       : initial.buyAmount;
 
   initial.riskAmount =
     initial.riskAmount === undefined &&
     buyAmount !== undefined &&
     slSellAmount !== undefined
-      ? buyAmount - slSellAmount
+      ? buyAmount.minus(slSellAmount)
       : initial.riskAmount;
 
   initial.slSellAmount =
     initial.slSellAmount === undefined &&
     buyAmount !== undefined &&
     riskAmount !== undefined
-      ? buyAmount - riskAmount
+      ? buyAmount.minus(riskAmount)
       : initial.slSellAmount;
 
   return initial;
@@ -153,44 +159,36 @@ export const preComputeRatios = (initial: Values): Values => {
     initial.rewardPercent === undefined &&
     target !== undefined &&
     entryPrice !== undefined
-      ? (target / entryPrice) * 100
+      ? target.div(entryPrice).mul(100)
       : initial.rewardPercent === undefined &&
         rewardAmount !== undefined &&
         buyAmount !== undefined
-      ? (rewardAmount / buyAmount) * 100
+      ? rewardAmount.div(buyAmount).mul(100)
       : initial.rewardPercent;
 
   initial.riskPercent =
     initial.riskPercent === undefined &&
     stop !== undefined &&
     entryPrice !== undefined
-      ? (stop / entryPrice) * 100
+      ? stop.div(entryPrice).mul(100)
       : initial.riskPercent === undefined &&
         riskAmount !== undefined &&
         buyAmount !== undefined
-      ? (riskAmount / buyAmount) * 100
+      ? riskAmount.div(buyAmount).mul(100)
       : initial.riskPercent;
 
   initial.riskRewardRatio =
     initial.riskRewardRatio === undefined &&
     rewardPercent !== undefined &&
     riskPercent !== undefined
-      ? rewardPercent / riskPercent
+      ? rewardPercent.div(riskPercent)
       : initial.riskRewardRatio === undefined &&
         initial.rewardPercent !== undefined &&
         initial.riskPercent !== undefined
-      ? initial.rewardPercent / initial.riskPercent
+      ? initial.rewardPercent.div(initial.riskPercent)
       : initial.riskRewardRatio;
 
-  // Round to 5 decimal places
-  const computed: Values = Object.fromEntries(
-    Object.entries(initial).map(([key, value]) => [
-      key,
-      value !== undefined ? Math.round(value * 1e5) / 1e5 : undefined,
-    ])
-  ) as Values;
-
-  return computed;
+  return initial;
 };
 
 export const compute = (
@@ -212,156 +210,183 @@ export const compute = (
     riskPercent,
     riskAmount,
   } = initial;
-  const computedFloat: Values = {
+
+  const computed: Values = {
     target:
       tpLimit !== undefined && entryPrice !== undefined
-        ? tpLimit - entryPrice
+        ? tpLimit.minus(entryPrice)
         : rewardPercent !== undefined && entryPrice !== undefined
-        ? entryPrice * (rewardPercent / 100)
+        ? entryPrice.mul(rewardPercent.div(100))
         : undefined,
 
     rewardPercent:
       target !== undefined && entryPrice !== undefined
-        ? (target / entryPrice) * 100
+        ? target.div(entryPrice).mul(100)
         : rewardAmount !== undefined && buyAmount !== undefined
-        ? (rewardAmount / buyAmount) * 100
+        ? rewardAmount.div(buyAmount).mul(100)
         : undefined,
 
     rewardAmount:
       buyAmount !== undefined && rewardPercent !== undefined
-        ? buyAmount * (rewardPercent / 100)
+        ? buyAmount.mul(rewardPercent.div(100))
         : undefined,
 
     tpLimit:
       target !== undefined && entryPrice !== undefined
-        ? target + entryPrice
+        ? target.plus(entryPrice)
         : target !== undefined && rewardPercent !== undefined
-        ? target / (rewardPercent / 100) + target
+        ? target.div(rewardPercent.div(100)).plus(target)
         : undefined,
 
     tpSellAmount:
       buyAmount !== undefined && rewardAmount !== undefined
-        ? buyAmount + rewardAmount
+        ? buyAmount.plus(rewardAmount)
         : undefined,
 
     riskRewardRatio:
       rewardPercent !== undefined && riskPercent !== undefined
-        ? rewardPercent / riskPercent
+        ? rewardPercent.div(riskPercent)
         : undefined,
 
     entryPrice:
       slTrigger !== undefined && stop !== undefined
-        ? stop + slTrigger
+        ? stop.plus(slTrigger)
         : stop !== undefined && riskPercent !== undefined
-        ? stop / (riskPercent / 100)
+        ? stop.div(riskPercent.div(100))
         : target !== undefined && rewardPercent !== undefined
-        ? target / (rewardPercent / 100)
+        ? target.div(rewardPercent.div(100))
         : undefined,
 
     buyAmount:
       riskAmount !== undefined && riskPercent !== undefined
-        ? riskAmount / (riskPercent / 100)
+        ? riskAmount.div(riskPercent.div(100))
         : undefined,
 
     slTrigger:
       entryPrice !== undefined && stop !== undefined
-        ? entryPrice - stop
+        ? entryPrice.minus(stop)
         : stop !== undefined && riskPercent !== undefined
-        ? stop / (riskPercent / 100) - stop
+        ? stop.div(riskPercent.div(100)).minus(stop)
         : undefined,
 
     slSellAmount:
       buyAmount !== undefined && riskAmount !== undefined
-        ? buyAmount - riskAmount
+        ? buyAmount.minus(riskAmount)
         : undefined,
 
     stop:
       entryPrice !== undefined && slTrigger !== undefined
-        ? entryPrice - slTrigger
+        ? entryPrice.minus(slTrigger)
         : riskPercent !== undefined && entryPrice !== undefined
-        ? entryPrice * (riskPercent / 100)
+        ? entryPrice.mul(riskPercent.div(100))
         : undefined,
 
     riskPercent:
       stop !== undefined && entryPrice !== undefined
-        ? (stop / entryPrice) * 100
+        ? stop.div(entryPrice).mul(100)
         : riskAmount !== undefined && buyAmount !== undefined
-        ? (riskAmount / buyAmount) * 100
+        ? riskAmount.div(buyAmount).mul(100)
         : undefined,
 
     riskAmount:
       buyAmount !== undefined && riskPercent !== undefined
-        ? buyAmount * (riskPercent / 100)
+        ? buyAmount.mul(riskPercent.div(100))
         : undefined,
   };
-
-  // Round to 5 decimal places
-  const computed: Values = Object.fromEntries(
-    Object.entries(computedFloat).map(([key, value]) => [
-      key,
-      value !== undefined ? Math.round(value * 1e5) / 1e5 : undefined,
-    ])
-  ) as Values;
 
   // Merge initial and computed states
   // (only defined values in computed state should overwrite initial state)
   const merged: Values = {
-    target: computed.target ?? initial.target,
-    rewardPercent: computed.rewardPercent ?? initial.rewardPercent,
-    rewardAmount: computed.rewardAmount ?? initial.rewardAmount,
-    tpLimit: computed.tpLimit ?? initial.tpLimit,
-    tpSellAmount: computed.tpSellAmount ?? initial.tpSellAmount,
-    riskRewardRatio: computed.riskRewardRatio ?? initial.riskRewardRatio,
-    entryPrice: computed.entryPrice ?? initial.entryPrice,
-    buyAmount: computed.buyAmount ?? initial.buyAmount,
-    slTrigger: computed.slTrigger ?? initial.slTrigger,
-    slSellAmount: computed.slSellAmount ?? initial.slSellAmount,
-    stop: computed.stop ?? initial.stop,
-    riskPercent: computed.riskPercent ?? initial.riskPercent,
-    riskAmount: computed.riskAmount ?? initial.riskAmount,
+    target: merge(computed.target, initial.target),
+    rewardPercent: merge(computed.rewardPercent, initial.rewardPercent),
+    rewardAmount: merge(computed.rewardAmount, initial.rewardAmount),
+    tpLimit: merge(computed.tpLimit, initial.tpLimit),
+    tpSellAmount: merge(computed.tpSellAmount, initial.tpSellAmount),
+    riskRewardRatio: merge(computed.riskRewardRatio, initial.riskRewardRatio),
+    entryPrice: merge(computed.entryPrice, initial.entryPrice),
+    buyAmount: merge(computed.buyAmount, initial.buyAmount),
+    slTrigger: merge(computed.slTrigger, initial.slTrigger),
+    slSellAmount: merge(computed.slSellAmount, initial.slSellAmount),
+    stop: merge(computed.stop, initial.stop),
+    riskPercent: merge(computed.riskPercent, initial.riskPercent),
+    riskAmount: merge(computed.riskAmount, initial.riskAmount),
   };
 
   if (JSON.stringify(initial) === JSON.stringify(merged)) {
     return [merged, noError];
   } else {
     if (loopCount < 100) {
+      if (loopCount > 5 && loopCount < 10)
+        console.debug(
+          "Loop Count",
+          loopCount,
+          JSON.parse(JSON.stringify(initial)),
+          JSON.parse(JSON.stringify(merged))
+        );
       return compute(merged, loopCount + 1);
     } else {
       const error: Error = {
-        target: computed.target !== initial.target,
-        rewardPercent: computed.rewardPercent !== initial.rewardPercent,
-        rewardAmount: computed.rewardAmount !== initial.rewardAmount,
-        tpLimit: computed.tpLimit !== initial.tpLimit,
-        tpSellAmount: computed.tpSellAmount !== initial.tpSellAmount,
-        riskRewardRatio: computed.riskRewardRatio !== initial.riskRewardRatio,
-        entryPrice: computed.entryPrice !== initial.entryPrice,
-        buyAmount: computed.buyAmount !== initial.buyAmount,
-        slTrigger: computed.slTrigger !== initial.slTrigger,
-        slSellAmount: computed.slSellAmount !== initial.slSellAmount,
-        stop: computed.stop !== initial.stop,
-        riskPercent: computed.riskPercent !== initial.riskPercent,
-        riskAmount: computed.riskAmount !== initial.riskAmount,
+        target: !equal(computed.target, initial.target),
+        rewardPercent: !equal(computed.rewardPercent, initial.rewardPercent),
+        rewardAmount: !equal(computed.rewardAmount, initial.rewardAmount),
+        tpLimit: !equal(computed.tpLimit, initial.tpLimit),
+        tpSellAmount: !equal(computed.tpSellAmount, initial.tpSellAmount),
+        riskRewardRatio: !equal(
+          computed.riskRewardRatio,
+          initial.riskRewardRatio
+        ),
+        entryPrice: !equal(computed.entryPrice, initial.entryPrice),
+        buyAmount: !equal(computed.buyAmount, initial.buyAmount),
+        slTrigger: !equal(computed.slTrigger, initial.slTrigger),
+        slSellAmount: !equal(computed.slSellAmount, initial.slSellAmount),
+        stop: !equal(computed.stop, initial.stop),
+        riskPercent: !equal(computed.riskPercent, initial.riskPercent),
+        riskAmount: !equal(computed.riskAmount, initial.riskAmount),
       };
-      console.error("Compute failed with infinite recursion.", initial, merged);
+      console.error(
+        "Compute failed with infinite recursion.",
+        JSON.parse(JSON.stringify(initial)),
+        JSON.parse(JSON.stringify(merged))
+      );
       return [null, error];
     }
   }
 };
 
+const merge = (
+  computed: Decimal | undefined,
+  initial: Decimal | undefined
+): Decimal | undefined => {
+  if (computed === undefined) return initial;
+  if (equal(computed, initial)) return initial;
+  else return computed;
+};
+
+const equal = (
+  computed: Decimal | undefined,
+  initial: Decimal | undefined
+): boolean => {
+  if (computed === undefined && initial === undefined) return true;
+  if (computed === undefined || initial === undefined) return false;
+  return (
+    computed.toFixed(100).slice(0, -50) === initial.toFixed(100).slice(0, -50)
+  );
+};
+
 type Values = {
-  target: number | undefined;
-  rewardPercent: number | undefined;
-  rewardAmount: number | undefined;
-  tpLimit: number | undefined;
-  tpSellAmount: number | undefined;
-  riskRewardRatio: number | undefined;
-  entryPrice: number | undefined;
-  buyAmount: number | undefined;
-  slTrigger: number | undefined;
-  slSellAmount: number | undefined;
-  stop: number | undefined;
-  riskPercent: number | undefined;
-  riskAmount: number | undefined;
+  target: Decimal | undefined;
+  rewardPercent: Decimal | undefined;
+  rewardAmount: Decimal | undefined;
+  tpLimit: Decimal | undefined;
+  tpSellAmount: Decimal | undefined;
+  riskRewardRatio: Decimal | undefined;
+  entryPrice: Decimal | undefined;
+  buyAmount: Decimal | undefined;
+  slTrigger: Decimal | undefined;
+  slSellAmount: Decimal | undefined;
+  stop: Decimal | undefined;
+  riskPercent: Decimal | undefined;
+  riskAmount: Decimal | undefined;
 };
 
 export type Error = {

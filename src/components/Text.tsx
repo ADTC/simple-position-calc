@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import TextField from "@mui/material/TextField";
+import Decimal from "decimal.js";
 
 export default function Text({
   label,
@@ -10,26 +11,28 @@ export default function Text({
 }: {
   label: string;
   xs?: boolean;
-  value: number | undefined;
-  onChange: (value: number | undefined) => void;
+  value: Decimal | undefined;
+  onChange: (value: Decimal | undefined) => void;
   error: boolean;
 }) {
   const [stringValue, setStringValue] = useState<string>("");
 
   useEffect(() => {
     if (value === undefined) setStringValue("");
-    else setStringValue(value?.toString() ?? "");
+    else setStringValue(value.toFixed());
   }, [value]);
 
   useEffect(() => {
     // Only allow optional hyphen at beginning, optional digits
     // and one optional decimal point anywhere in the string
     if (/^-?\d*\.?\d*$/.test(stringValue)) {
-      const numberValue = parseFloat(stringValue);
-
-      if (isNaN(numberValue)) onChange(undefined);
-      else onChange(numberValue);
-      //
+      // Allow trailing decimal point when typing
+      if (stringValue.endsWith(".")) return;
+      try {
+        onChange(new Decimal(stringValue));
+      } catch {
+        onChange(undefined);
+      }
     } else onChange(undefined);
   }, [onChange, stringValue]);
 
