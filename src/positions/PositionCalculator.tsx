@@ -24,7 +24,8 @@ export default function PositionCalculator({ type }: { type: Position }) {
   const [rewardAmount, setRewardAmount] = useState<Decimal>();
   const [tpLimit, setTpLimit] = useState<Decimal>();
   const [tpSellAmount, setTpSellAmount] = useState<Decimal>();
-  const [riskRewardRatio, setRiskRewardRatio] = useState<Decimal>();
+  const [longRiskRewardRatio, setLongRiskRewardRatio] = useState<Decimal>();
+  const [shortRiskRewardRatio, setShortRiskRewardRatio] = useState<Decimal>();
   const [entryPrice, setEntryPrice] = useState<Decimal>();
   const [buyAmount, setBuyAmount] = useState<Decimal>();
   const [slTrigger, setSlTrigger] = useState<Decimal>();
@@ -43,7 +44,8 @@ export default function PositionCalculator({ type }: { type: Position }) {
         rewardAmount,
         tpLimit,
         tpSellAmount,
-        riskRewardRatio,
+        longRiskRewardRatio,
+        shortRiskRewardRatio,
         entryPrice,
         buyAmount,
         slTrigger,
@@ -64,7 +66,8 @@ export default function PositionCalculator({ type }: { type: Position }) {
     setRewardAmount(computed.rewardAmount);
     setTpLimit(computed.tpLimit);
     setTpSellAmount(computed.tpSellAmount);
-    setRiskRewardRatio(computed.riskRewardRatio);
+    setLongRiskRewardRatio(computed.longRiskRewardRatio);
+    setShortRiskRewardRatio(computed.shortRiskRewardRatio);
     setEntryPrice(computed.entryPrice);
     setBuyAmount(computed.buyAmount);
     setSlTrigger(computed.slTrigger);
@@ -80,7 +83,8 @@ export default function PositionCalculator({ type }: { type: Position }) {
     setRewardAmount(undefined);
     setTpLimit(undefined);
     setTpSellAmount(undefined);
-    setRiskRewardRatio(undefined);
+    setLongRiskRewardRatio(undefined);
+    setShortRiskRewardRatio(undefined);
     setEntryPrice(undefined);
     setBuyAmount(undefined);
     setSlTrigger(undefined);
@@ -170,9 +174,9 @@ export default function PositionCalculator({ type }: { type: Position }) {
         <Text
           hidden={isShort}
           label={config.riskRewardRatio}
-          value={riskRewardRatio}
-          onChange={setRiskRewardRatio}
-          error={error.riskRewardRatio}
+          value={longRiskRewardRatio}
+          onChange={setLongRiskRewardRatio}
+          error={error.longRiskRewardRatio}
         />
       </Box>
       <TextBoxes>
@@ -202,9 +206,9 @@ export default function PositionCalculator({ type }: { type: Position }) {
         <Text
           hidden={!isShort}
           label={config.riskRewardRatio}
-          value={riskRewardRatio}
-          onChange={setRiskRewardRatio}
-          error={error.riskRewardRatio}
+          value={shortRiskRewardRatio}
+          onChange={setShortRiskRewardRatio}
+          error={error.shortRiskRewardRatio}
         />
       </Box>
       <TextBoxes>

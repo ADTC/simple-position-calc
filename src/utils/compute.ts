@@ -18,7 +18,8 @@ Reward Amount = Buy Amount * Reward %
 Reward % = Reward Amount / Buy Amount
 Sell Amount(USD) = Buy Amount (USD) + Reward Amount (USD)
 
-Risk/Reward Ratio = Reward % / Risk %
+Long Risk/Reward Ratio = Reward % / Risk %
+Short Risk/Reward Ratio =  Risk % / Reward %
 
 Stop = Entry Price - SL Trigger
 SL Trigger = Entry Price - Stop
@@ -40,7 +41,8 @@ export const preCompute = (initial: Values): Values => {
     rewardAmount,
     tpLimit,
     tpSellAmount,
-    // riskRewardRatio,
+    // longRiskRewardRatio,
+    // shortRiskRewardRatio,
     entryPrice,
     buyAmount,
     slTrigger,
@@ -145,7 +147,8 @@ export const preComputeRatios = (initial: Values): Values => {
     rewardAmount,
     // tpLimit,
     // tpSellAmount,
-    // riskRewardRatio,
+    // longRiskRewardRatio,
+    // shortRiskRewardRatio,
     entryPrice,
     buyAmount,
     // slTrigger,
@@ -177,16 +180,27 @@ export const preComputeRatios = (initial: Values): Values => {
       ? riskAmount.div(buyAmount).mul(100)
       : initial.riskPercent;
 
-  initial.riskRewardRatio =
-    initial.riskRewardRatio === undefined &&
+  initial.longRiskRewardRatio =
+    initial.longRiskRewardRatio === undefined &&
     rewardPercent !== undefined &&
     riskPercent !== undefined
       ? rewardPercent.div(riskPercent)
-      : initial.riskRewardRatio === undefined &&
+      : initial.longRiskRewardRatio === undefined &&
         initial.rewardPercent !== undefined &&
         initial.riskPercent !== undefined
       ? initial.rewardPercent.div(initial.riskPercent)
-      : initial.riskRewardRatio;
+      : initial.longRiskRewardRatio;
+
+  initial.shortRiskRewardRatio =
+    initial.shortRiskRewardRatio === undefined &&
+    riskPercent !== undefined &&
+    rewardPercent !== undefined
+      ? riskPercent.div(rewardPercent)
+      : initial.shortRiskRewardRatio === undefined &&
+        initial.riskPercent !== undefined &&
+        initial.rewardPercent !== undefined
+      ? initial.riskPercent.div(initial.rewardPercent)
+      : initial.shortRiskRewardRatio;
 
   return initial;
 };
@@ -201,7 +215,8 @@ export const compute = (
     rewardAmount,
     tpLimit,
     // tpSellAmount,
-    // riskRewardRatio,
+    // longRiskRewardRatio,
+    // shortRiskRewardRatio,
     entryPrice,
     buyAmount,
     slTrigger,
@@ -243,9 +258,14 @@ export const compute = (
         ? buyAmount.plus(rewardAmount)
         : undefined,
 
-    riskRewardRatio:
+    longRiskRewardRatio:
       rewardPercent !== undefined && riskPercent !== undefined
         ? rewardPercent.div(riskPercent)
+        : undefined,
+
+    shortRiskRewardRatio:
+      riskPercent !== undefined && rewardPercent !== undefined
+        ? riskPercent.div(rewardPercent)
         : undefined,
 
     entryPrice:
@@ -302,7 +322,14 @@ export const compute = (
     rewardAmount: merge(computed.rewardAmount, initial.rewardAmount),
     tpLimit: merge(computed.tpLimit, initial.tpLimit),
     tpSellAmount: merge(computed.tpSellAmount, initial.tpSellAmount),
-    riskRewardRatio: merge(computed.riskRewardRatio, initial.riskRewardRatio),
+    longRiskRewardRatio: merge(
+      computed.longRiskRewardRatio,
+      initial.longRiskRewardRatio
+    ),
+    shortRiskRewardRatio: merge(
+      computed.shortRiskRewardRatio,
+      initial.shortRiskRewardRatio
+    ),
     entryPrice: merge(computed.entryPrice, initial.entryPrice),
     buyAmount: merge(computed.buyAmount, initial.buyAmount),
     slTrigger: merge(computed.slTrigger, initial.slTrigger),
@@ -331,9 +358,13 @@ export const compute = (
         rewardAmount: !equal(computed.rewardAmount, initial.rewardAmount),
         tpLimit: !equal(computed.tpLimit, initial.tpLimit),
         tpSellAmount: !equal(computed.tpSellAmount, initial.tpSellAmount),
-        riskRewardRatio: !equal(
-          computed.riskRewardRatio,
-          initial.riskRewardRatio
+        longRiskRewardRatio: !equal(
+          computed.longRiskRewardRatio,
+          initial.longRiskRewardRatio
+        ),
+        shortRiskRewardRatio: !equal(
+          computed.shortRiskRewardRatio,
+          initial.shortRiskRewardRatio
         ),
         entryPrice: !equal(computed.entryPrice, initial.entryPrice),
         buyAmount: !equal(computed.buyAmount, initial.buyAmount),
@@ -379,7 +410,8 @@ type Values = {
   rewardAmount: Decimal | undefined;
   tpLimit: Decimal | undefined;
   tpSellAmount: Decimal | undefined;
-  riskRewardRatio: Decimal | undefined;
+  longRiskRewardRatio: Decimal | undefined;
+  shortRiskRewardRatio: Decimal | undefined;
   entryPrice: Decimal | undefined;
   buyAmount: Decimal | undefined;
   slTrigger: Decimal | undefined;
@@ -395,7 +427,8 @@ export type Error = {
   rewardAmount: boolean;
   tpLimit: boolean;
   tpSellAmount: boolean;
-  riskRewardRatio: boolean;
+  longRiskRewardRatio: boolean;
+  shortRiskRewardRatio: boolean;
   entryPrice: boolean;
   buyAmount: boolean;
   slTrigger: boolean;
@@ -411,7 +444,8 @@ export const noError: Error = {
   rewardAmount: false,
   tpLimit: false,
   tpSellAmount: false,
-  riskRewardRatio: false,
+  longRiskRewardRatio: false,
+  shortRiskRewardRatio: false,
   entryPrice: false,
   buyAmount: false,
   slTrigger: false,
