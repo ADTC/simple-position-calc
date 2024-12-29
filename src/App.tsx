@@ -23,7 +23,7 @@ function App() {
     _: React.MouseEvent<HTMLElement>,
     position: Position
   ) => {
-    setPosition(position);
+    if (position) setPosition(position);
   };
 
   return (
