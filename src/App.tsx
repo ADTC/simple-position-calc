@@ -6,9 +6,11 @@ import "@fontsource/roboto/700.css";
 import "./App.css";
 import { useState } from "react";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+import Alert from "@mui/material/Alert";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import PositionCalculator, { Position } from "positions/PositionCalculator";
+import GitHubCorner from "components/GitHubCorner";
 
 const darkTheme = createTheme({
   palette: {
@@ -28,8 +30,10 @@ function App() {
 
   return (
     <div className="App">
+      <GitHubCorner />
       <header className="App-header">
         <ThemeProvider theme={darkTheme}>
+          <h3>Position Size Calculator</h3>
           <ToggleButtonGroup
             color="primary"
             value={position}
@@ -42,6 +46,9 @@ function App() {
               Short Position (Sell & Buy)
             </ToggleButton>
           </ToggleButtonGroup>
+          <Alert severity="info">
+            Fill in any three to four values and click Compute to get the rest.
+          </Alert>
           <PositionCalculator type={position} />
         </ThemeProvider>
       </header>
