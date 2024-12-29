@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import TextField from "@mui/material/TextField";
 import Decimal from "decimal.js";
+import IconSpan from "./IconSpan";
 
 export default function Text({
   label,
@@ -16,6 +17,7 @@ export default function Text({
   error: boolean;
 }) {
   const [stringValue, setStringValue] = useState<string>("");
+  const [hover, setHover] = useState<boolean>(false);
 
   useEffect(() => {
     if (value === undefined) setStringValue("");
@@ -36,11 +38,38 @@ export default function Text({
     } else onChange(undefined);
   }, [onChange, stringValue]);
 
+  const helperText = (
+    <>
+      {label}{" "}
+      <IconSpan
+        icon="📋"
+        hover={hover}
+        onClick={
+          () =>
+            navigator.clipboard
+              .readText()
+              .then((text) => setStringValue(text))
+              .catch(() => {}) // Ignore error
+        }
+      />{" "}
+      <IconSpan
+        icon="📑"
+        hover={hover}
+        onClick={
+          () => navigator.clipboard.writeText(stringValue).catch(() => {}) // Ignore error
+        }
+      />{" "}
+      <IconSpan icon="❌" hover={hover} onClick={() => setStringValue("")} />
+    </>
+  );
+
   return (
     <TextField
+      onPointerEnter={() => setHover(true)}
+      onPointerLeave={() => setHover(false)}
       error={error}
-      helperText={label}
-      sx={xs ? { maxWidth: 130 } : undefined}
+      helperText={helperText}
+      sx={xs ? { maxWidth: 140 } : undefined}
       variant="outlined"
       value={stringValue}
       onChange={(e) => setStringValue(e.target.value)}

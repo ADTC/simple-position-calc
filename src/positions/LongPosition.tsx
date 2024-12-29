@@ -108,7 +108,7 @@ export default function LongPosition() {
           error={error.rewardPercent}
         />
         <Text
-          label="Reward Amount"
+          label="Reward Amt" // "Reward Amount"
           xs
           value={rewardAmount}
           onChange={setRewardAmount}
