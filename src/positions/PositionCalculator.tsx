@@ -14,7 +14,7 @@ import {
 
 import Decimal from "decimal.js";
 
-export default function LongPosition() {
+export default function PositionCalculator() {
   const [target, setTarget] = useState<Decimal>();
   const [rewardPercent, setRewardPercent] = useState<Decimal>();
   const [rewardAmount, setRewardAmount] = useState<Decimal>();

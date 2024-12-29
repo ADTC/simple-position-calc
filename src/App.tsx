@@ -5,7 +5,7 @@ import "@fontsource/roboto/700.css";
 
 import "./App.css";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import LongPosition from "positions/LongPosition";
+import PositionCalculator from "positions/PositionCalculator";
 
 const darkTheme = createTheme({
   palette: {
@@ -18,7 +18,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <ThemeProvider theme={darkTheme}>
-          <LongPosition />
+          <PositionCalculator />
         </ThemeProvider>
       </header>
     </div>
