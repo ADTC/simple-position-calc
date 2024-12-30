@@ -32,7 +32,7 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 ### `npm run eject`
 
 > [!NOTE]
-> Please don't use this command. The information is provided for educational purposes only.
+> Please don't use this command. _The information is provided for educational purposes only._
 
 **Note: this is a one-way operation. Once you `eject`, you can’t go back!**
 
