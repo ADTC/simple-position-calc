@@ -93,6 +93,7 @@ export default function PositionCalculator({ type }: { type: Position }) {
 
   const isError = Object.values(error).some((value) => value);
 
+  const baseAdornment = "XYZ";
   const green = "#003705";
   const red = "#5a2d2d";
   const config = {
@@ -128,6 +129,7 @@ export default function PositionCalculator({ type }: { type: Position }) {
           error={error.target}
         />
         <Text
+          adornment="%"
           label={config.rewardPercent}
           xs
           value={rewardPercent}
@@ -144,12 +146,16 @@ export default function PositionCalculator({ type }: { type: Position }) {
       </TextBoxes>
       <TextBoxes>
         <Text
+          baseAmount={new Decimal(1)}
+          baseAdornment={baseAdornment}
           label={config.tpLimit}
           value={tpLimit}
           onChange={setTpLimit}
           error={error.tpLimit}
         />
         <Text
+          baseAmount={tpSellAmount?.div(tpLimit || 1).toDecimalPlaces(5)}
+          baseAdornment={baseAdornment}
           label={config.tpSellAmount}
           value={tpSellAmount}
           onChange={setTpSellAmount}
@@ -167,6 +173,7 @@ export default function PositionCalculator({ type }: { type: Position }) {
         }}
       >
         <Text
+          adornment=""
           hidden={isShort}
           label={config.riskRewardRatio}
           value={longRiskRewardRatio}
@@ -176,12 +183,16 @@ export default function PositionCalculator({ type }: { type: Position }) {
       </Box>
       <TextBoxes>
         <Text
+          baseAmount={new Decimal(1)}
+          baseAdornment={baseAdornment}
           label={config.entryPrice}
           value={entryPrice}
           onChange={setEntryPrice}
           error={error.entryPrice}
         />
         <Text
+          baseAmount={buyAmount?.div(entryPrice || 1).toDecimalPlaces(5)}
+          baseAdornment={baseAdornment}
           label={config.buyAmount}
           value={buyAmount}
           onChange={setBuyAmount}
@@ -199,6 +210,7 @@ export default function PositionCalculator({ type }: { type: Position }) {
         }}
       >
         <Text
+          adornment=""
           hidden={!isShort}
           label={config.riskRewardRatio}
           value={shortRiskRewardRatio}
@@ -208,12 +220,16 @@ export default function PositionCalculator({ type }: { type: Position }) {
       </Box>
       <TextBoxes>
         <Text
+          baseAmount={new Decimal(1)}
+          baseAdornment={baseAdornment}
           label={config.slTrigger}
           value={slTrigger}
           onChange={setSlTrigger}
           error={error.slTrigger}
         />
         <Text
+          baseAmount={slSellAmount?.div(slTrigger || 1).toDecimalPlaces(5)}
+          baseAdornment={baseAdornment}
           label={config.slSellAmount}
           value={slSellAmount}
           onChange={setSlSellAmount}
@@ -229,6 +245,7 @@ export default function PositionCalculator({ type }: { type: Position }) {
           error={error.stop}
         />
         <Text
+          adornment="%"
           label={config.riskPercent}
           xs
           value={riskPercent}
