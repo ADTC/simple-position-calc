@@ -29,3 +29,11 @@ Entry Price = Stop / Risk %
 Risk Amount = Buy Amount * Risk %
 Risk % = Risk Amount / Buy Amount
 Sell Amount (USD) = Buy Amount (USD) - Risk Amount (USD)
+
+Trading Fees:
+
+Entry Fee = Buy Amount * Fee %
+TP Fee = TP Sell Amount * Fee %
+Nett Profit = Reward Amount - (Entry Fee + TP Fee)
+SL Fee = SL Sell Amount * Fee %
+Nett Loss = Risk Amount + (Entry Fee + SL Fee)

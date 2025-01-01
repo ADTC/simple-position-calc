@@ -27,6 +27,9 @@ export default function PositionCalculator({ type }: { type: Position }) {
   const [stop, setStop] = useState<Decimal>();
   const [riskPercent, setRiskPercent] = useState<Decimal>();
   const [riskAmount, setRiskAmount] = useState<Decimal>();
+  const [feePercent, setFeePercent] = useState<Decimal | undefined>(
+    new Decimal(0.075) // Binance Fee when using BNB with 25% discount
+  );
 
   const [error, setError] = useState<Error>(noError);
 
@@ -72,6 +75,22 @@ export default function PositionCalculator({ type }: { type: Position }) {
     setRiskAmount(computed.riskAmount);
   };
 
+  const computeNettProfit = () => {
+    if (!feePercent || !tpSellAmount || !buyAmount || !rewardAmount) return;
+    const entryFee = buyAmount.mul(feePercent).div(100);
+    const tpFee = tpSellAmount.mul(feePercent).div(100);
+    const allFees = entryFee.plus(tpFee);
+    return isShort ? rewardAmount.plus(allFees) : rewardAmount.minus(allFees);
+  };
+
+  const computeNettLoss = () => {
+    if (!feePercent || !slSellAmount || !buyAmount || !riskAmount) return;
+    const entryFee = buyAmount.mul(feePercent).div(100);
+    const slFee = slSellAmount.mul(feePercent).div(100);
+    const allFees = entryFee.plus(slFee);
+    return isShort ? riskAmount.minus(allFees) : riskAmount.plus(allFees);
+  };
+
   const resetAllState = () => {
     setTarget(undefined);
     setRewardPercent(undefined);
@@ -94,6 +113,7 @@ export default function PositionCalculator({ type }: { type: Position }) {
   const isError = Object.values(error).some((value) => value);
 
   const baseAdornment = "XYZ";
+  const quoteAdornment = "ABC";
   const green = "#003705";
   const red = "#5a2d2d";
   const config = {
@@ -116,9 +136,13 @@ export default function PositionCalculator({ type }: { type: Position }) {
     aboveColor: isShort ? red : green,
     belowHeight: isShort ? 150 : 50,
     belowColor: isShort ? green : red,
+    tpFee: isShort ? "SL Fee" : "TP Fee",
+    slFee: isShort ? "TP Fee" : "SL Fee",
+    nettProfit: isShort ? "Nett Loss After Fees" : "Nett Profit After Fees",
+    nettLoss: isShort ? "Nett Profit After Fees" : "Nett Loss After Fees",
   };
 
-  return (
+  const mainCalculator = (
     <>
       <Alert severity={isError ? "error" : "info"}>
         {isError
@@ -142,6 +166,8 @@ export default function PositionCalculator({ type }: { type: Position }) {
           error={error.rewardPercent}
         />
         <Text
+          baseAmount={computeNettProfit()}
+          baseAdornment={quoteAdornment}
           label={config.rewardAmount}
           xs
           value={rewardAmount}
@@ -258,6 +284,8 @@ export default function PositionCalculator({ type }: { type: Position }) {
           error={error.riskPercent}
         />
         <Text
+          baseAmount={computeNettLoss()}
+          baseAdornment={quoteAdornment}
           label={config.riskAmount}
           xs
           value={riskAmount}
@@ -274,5 +302,109 @@ export default function PositionCalculator({ type }: { type: Position }) {
         </Button>
       </Box>
     </>
+  );
+
+  const feeCalculator = (
+    <>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-around",
+          alignItems: "center",
+          width: "100%",
+        }}
+      >
+        <h6>Trading Fees</h6>
+        <Text
+          adornment="%"
+          label="Trading Fee %"
+          xs
+          value={feePercent}
+          onChange={setFeePercent}
+          error={false}
+        />
+      </Box>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: isShort ? "column-reverse" : "column",
+        }}
+      >
+        <TextBoxes>
+          <Text
+            disabled
+            label={config.tpFee}
+            value={tpSellAmount?.mul(feePercent || 0).div(100)}
+            onChange={() => {}}
+            error={false}
+          />
+          <Text
+            disabled
+            label={config.nettProfit}
+            value={computeNettProfit()}
+            onChange={() => {}}
+            error={false}
+          />
+        </TextBoxes>
+        <TextBoxes>
+          <Text
+            disabled
+            label="Entry Fee"
+            value={buyAmount?.mul(feePercent || 0).div(100)}
+            onChange={() => {}}
+            error={false}
+          />
+        </TextBoxes>
+        <TextBoxes>
+          <Text
+            disabled
+            label={config.slFee}
+            value={slSellAmount?.mul(feePercent || 0).div(100)}
+            onChange={() => {}}
+            error={false}
+          />
+          <Text
+            disabled
+            label={config.nettLoss}
+            value={computeNettLoss()}
+            onChange={() => {}}
+            error={false}
+          />
+        </TextBoxes>
+      </Box>
+    </>
+  );
+
+  return (
+    <Box
+      sx={{
+        marginTop: 2,
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+        flexWrap: "wrap",
+        gap: 5,
+      }}
+    >
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        {mainCalculator}
+      </Box>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        {feeCalculator}
+      </Box>
+    </Box>
   );
 }

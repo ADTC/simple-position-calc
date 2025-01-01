@@ -14,6 +14,7 @@ const adornCSS: React.CSSProperties = {
 };
 
 export default function Text({
+  disabled,
   hidden,
   label,
   xs,
@@ -24,6 +25,7 @@ export default function Text({
   baseAdornment = "",
   adornment = "ABC",
 }: {
+  disabled?: boolean;
   hidden?: boolean;
   label: string;
   xs?: boolean;
@@ -34,15 +36,18 @@ export default function Text({
   baseAdornment?: string;
   adornment?: string;
 }) {
+  const [mounted, setMounted] = useState<boolean>(false);
   const [stringValue, setStringValue] = useState<string>("");
   const [hover, setHover] = useState<boolean>(false);
 
   useEffect(() => {
     if (value === undefined) setStringValue("");
     else setStringValue(value.toFixed());
+    setMounted(true);
   }, [value]);
 
   useEffect(() => {
+    if (!mounted) return;
     if (regex.test(stringValue)) {
       // Allow trailing decimal point when typing
       if (stringValue.endsWith(".")) return;
@@ -52,9 +57,11 @@ export default function Text({
         onChange(undefined);
       }
     } else onChange(undefined);
-  }, [onChange, stringValue]);
+  }, [mounted, onChange, stringValue]);
 
-  const helperText = (
+  const helperText = disabled ? (
+    <>{label}</>
+  ) : (
     <>
       {label}{" "}
       <IconSpan
@@ -88,6 +95,7 @@ export default function Text({
 
   return (
     <TextField
+      disabled={disabled}
       label={
         baseAmount && baseAdornment ? (
           <span style={adornCSS}>
