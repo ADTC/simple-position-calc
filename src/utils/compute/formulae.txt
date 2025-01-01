@@ -1,0 +1,31 @@
+Formulae:
+
+Target = TP Limit - Entry Price
+TP Limit = Entry Price + Target
+TP Limit = (Target / Reward %) + Target
+Entry Price = TP Limit - Target
+Reward % = Target / Entry Price
+Target = Entry Price * Reward %
+Entry Price = Target / Reward %
+Reward Amount = Buy Amount * Reward %
+Reward % = Reward Amount / Buy Amount
+Sell Amount(USD) = Buy Amount (USD) + Reward Amount (USD)
+
+Long Risk/Reward Ratio = Reward % / Risk %
+Reward % = Long Risk/Reward Ratio * Risk %
+Risk % = Reward % / Long Risk/Reward Ratio
+
+Short Risk/Reward Ratio =  Risk % / Reward %
+Risk % = Short Risk/Reward Ratio * Reward %
+Reward % = Risk % / Short Risk/Reward Ratio
+
+Stop = Entry Price - SL Trigger
+SL Trigger = Entry Price - Stop
+SL Trigger = (Stop / Risk %) - Stop
+Entry Price = SL Trigger + Stop
+Risk % = Stop / Entry Price
+Stop = Entry Price * Risk %
+Entry Price = Stop / Risk %
+Risk Amount = Buy Amount * Risk %
+Risk % = Risk Amount / Buy Amount
+Sell Amount (USD) = Buy Amount (USD) - Risk Amount (USD)
