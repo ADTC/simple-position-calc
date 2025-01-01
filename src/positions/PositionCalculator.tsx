@@ -120,6 +120,11 @@ export default function PositionCalculator({ type }: { type: Position }) {
 
   return (
     <>
+      <Alert severity={isError ? "error" : "info"}>
+        {isError
+          ? "Compute failed. Remove some conflicting values and try again."
+          : "Fill in any three to four values and click Compute to get the rest."}
+      </Alert>
       <TextBoxes>
         <Text
           label={config.target}
@@ -268,11 +273,6 @@ export default function PositionCalculator({ type }: { type: Position }) {
           Reset
         </Button>
       </Box>
-      {isError && (
-        <Alert severity="error">
-          Compute failed. Remove some conflicting values and try again.
-        </Alert>
-      )}
     </>
   );
 }

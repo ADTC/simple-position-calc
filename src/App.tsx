@@ -6,7 +6,6 @@ import "@fontsource/roboto/700.css";
 import "./App.css";
 import { useState } from "react";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import Alert from "@mui/material/Alert";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import PositionCalculator, { Position } from "positions/PositionCalculator";
@@ -46,9 +45,6 @@ function App() {
               Short Position (Sell & Buy)
             </ToggleButton>
           </ToggleButtonGroup>
-          <Alert severity="info">
-            Fill in any three to four values and click Compute to get the rest.
-          </Alert>
           <PositionCalculator type={position} />
         </ThemeProvider>
       </header>
